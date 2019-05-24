@@ -4,10 +4,14 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "eject": "expo eject"
+    "eject": "expo eject",
+    "lint": "eslint ."
   },
   "dependencies": {
+    "eslint": "^5.16.0",
+    "eslint-config-handlebarlabs": "^0.0.3",
     "expo": "^32.0.0",
+    "prettier": "^1.17.1",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-navigation": "^3.11.0"
