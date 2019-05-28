@@ -11,6 +11,7 @@ import { Container } from "../components/Container";
 import { H1, H2, P } from "../components/Text";
 import { WeatherIcon } from "../components/WeatherIcon";
 import { BasicRow } from "../components/List";
+import { weatherApi } from "../util/weatherApi";
 
 const groupForecastByDay = list => {
   const data = {};
@@ -41,8 +42,6 @@ const groupForecastByDay = list => {
   return formattedlist;
 };
 
-const apiKey = "1648e403f1e44103b747e25c55f8c2fb";
-
 class Details extends React.Component {
   state = {
     currentWeather: {},
@@ -68,17 +67,7 @@ class Details extends React.Component {
   }
 
   getCurrent = ({ zipcode, coords }) => {
-    let suffix = "";
-    if (zipcode) {
-      suffix = `zip=${zipcode}`;
-    } else if (coords) {
-      suffix = `lat=${coords.latitude}&lon=${coords.longitude}`;
-    }
-
-    fetch(
-      `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=imperial&${suffix}`
-    )
-      .then(res => res.json())
+    weatherApi("/weather", { zipcode, coords })
       .then(currentWeather => {
         this.props.navigation.setParams({
           title: currentWeather.name
@@ -92,17 +81,7 @@ class Details extends React.Component {
   };
 
   getForecast = ({ zipcode, coords }) => {
-    let suffix = "";
-    if (zipcode) {
-      suffix = `zip=${zipcode}`;
-    } else if (coords) {
-      suffix = `lat=${coords.latitude}&lon=${coords.longitude}`;
-    }
-
-    fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?appid=${apiKey}&units=imperial&${suffix}`
-    )
-      .then(res => res.json())
+    weatherApi("/forecast", { zipcode, coords })
       .then(forecast => {
         this.setState({
           forecast: groupForecastByDay(forecast.list),

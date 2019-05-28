@@ -2,7 +2,7 @@ import React from "react";
 import { StatusBar, TouchableOpacity, Image } from "react-native";
 import { createAppContainer, createStackNavigator } from "react-navigation";
 
-import List from "./screens/List";
+import Search from "./screens/Search";
 import Details from "./screens/Details";
 
 const HeaderRightButton = ({ onPress, icon, style }) => (
@@ -33,7 +33,7 @@ const AppStack = createStackNavigator(
           <React.Fragment>
             <StatusBar barStyle="light-content" />
             <HeaderRightButton
-              onPress={() => navigation.navigate("List")}
+              onPress={() => navigation.navigate("Search")}
               icon={require("./assets/search.png")}
             />
           </React.Fragment>
@@ -45,8 +45,8 @@ const AppStack = createStackNavigator(
         headerTintColor: "#fff"
       })
     },
-    List: {
-      screen: List,
+    Search: {
+      screen: Search,
       navigationOptions: ({ navigation }) => ({
         headerTitle: "Search",
         headerRight: (
@@ -65,7 +65,8 @@ const AppStack = createStackNavigator(
     }
   },
   {
-    mode: "modal"
+    mode: "modal",
+    initialRouteName: "Search"
   }
 );
 
