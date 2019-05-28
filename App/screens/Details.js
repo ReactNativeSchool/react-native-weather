@@ -3,7 +3,8 @@ import {
   View,
   ActivityIndicator,
   ScrollView,
-  SafeAreaView
+  SafeAreaView,
+  Alert
 } from "react-native";
 
 import { format } from "date-fns";
@@ -12,6 +13,7 @@ import { H1, H2, P } from "../components/Text";
 import { WeatherIcon } from "../components/WeatherIcon";
 import { BasicRow } from "../components/List";
 import { weatherApi } from "../util/weatherApi";
+import { addRecentSearch } from "../util/recentSearch";
 
 const groupForecastByDay = list => {
   const data = {};
@@ -58,9 +60,18 @@ class Details extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    const oldLat = prevProps.navigation.getParam("lat");
+    const lat = this.props.navigation.getParam("lat");
+    const oldLon = prevProps.navigation.getParam("lon");
+    const lon = this.props.navigation.getParam("lon");
+
     const oldZipcode = prevProps.navigation.getParam("zipcode");
     const zipcode = this.props.navigation.getParam("zipcode");
-    if (zipcode && oldZipcode !== zipcode) {
+
+    if (lat && oldLat !== lat && lon && oldLon !== lon) {
+      this.getCurrent({ coords: { latitude: lat, longitude: lon } });
+      this.getForecast({ coords: { latitude: lat, longitude: lon } });
+    } else if (zipcode && oldZipcode !== zipcode) {
       this.getCurrent({ zipcode });
       this.getForecast({ zipcode });
     }
@@ -73,10 +84,22 @@ class Details extends React.Component {
           title: currentWeather.name
         });
 
+        addRecentSearch({
+          name: currentWeather.name,
+          id: currentWeather.id,
+          lat: currentWeather.coord.lat,
+          lon: currentWeather.coord.lon
+        });
+
         this.setState({ currentWeather, loadingCurrentWeather: false });
       })
-      .catch(err => {
-        console.log("details err", err);
+      .catch(() => {
+        Alert.alert("No location data found!", "Please try again.", [
+          {
+            text: "Okay",
+            onPress: () => this.props.navigation.navigate("Search")
+          }
+        ]);
       });
   };
 

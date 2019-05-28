@@ -1,7 +1,11 @@
 import React from "react";
-import { View, TextInput, Image } from "react-native";
+import { View, TextInput, Image, TouchableOpacity, Text } from "react-native";
 
-export const SearchBar = ({ ...props }) => (
+export const SearchBar = ({
+  onSearch,
+  searchButtonEnabled = false,
+  ...props
+}) => (
   <View
     style={{
       flexDirection: "row",
@@ -10,8 +14,10 @@ export const SearchBar = ({ ...props }) => (
       paddingHorizontal: 10,
       paddingVertical: 15,
       borderRadius: 10,
-      backgroundColor: "#3145b7"
-      // backgroundColor: "rgba(49, 69, 183, 0.75)"
+      borderWidth: 1,
+      borderColor: "#ddd",
+      backgroundColor: "#eee",
+      alignItems: "center"
     }}
   >
     <Image
@@ -21,17 +27,25 @@ export const SearchBar = ({ ...props }) => (
         width: 20,
         height: 20,
         marginRight: 10,
-        tintColor: "rgba(255, 255, 255, 0.4)"
+        tintColor: "rgba(0, 0, 0, 0.4)"
       }}
     />
     <TextInput
       style={{
         fontSize: 18,
-        flex: 1,
-        color: "#fff"
+        flex: 1
       }}
-      placeholderTextColor="rgba(255, 255, 255, 0.4)"
+      keyboardType="number-pad"
       {...props}
     />
+    <TouchableOpacity onPress={onSearch} disabled={!searchButtonEnabled}>
+      <Text
+        style={{
+          color: searchButtonEnabled ? "#147efb" : "rgba(0, 0, 0, 0.5)"
+        }}
+      >
+        Get Weather
+      </Text>
+    </TouchableOpacity>
   </View>
 );

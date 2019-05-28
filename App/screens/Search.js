@@ -3,17 +3,35 @@ import { FlatList, Text, View } from "react-native";
 
 import { SearchBar } from "../components/SearchBar";
 import { SearchItem } from "../components/List";
+import { getRecentSearch } from "../util/recentSearch";
 
 class Search extends React.Component {
   state = {
-    query: ""
+    query: "",
+    searchHistory: []
   };
+
+  componentDidMount() {
+    getRecentSearch().then(searchHistory => {
+      this.setState({ searchHistory });
+    });
+  }
 
   render() {
     return (
       <FlatList
-        data={[{ id: 123, name: "Franklin" }, { id: 321, name: "Nashville" }]}
-        renderItem={({ item }) => <SearchItem {...item} />}
+        data={this.state.searchHistory}
+        renderItem={({ item }) => (
+          <SearchItem
+            {...item}
+            onPress={() =>
+              this.props.navigation.navigate("Details", {
+                lat: item.lat,
+                lon: item.lon
+              })
+            }
+          />
+        )}
         keyExtractor={item => item.id.toString()}
         ListHeaderComponent={(
           <View>
@@ -22,7 +40,8 @@ class Search extends React.Component {
               onChangeText={query => {
                 this.setState({ query });
               }}
-              onSubmitEditing={() =>
+              searchButtonEnabled={this.state.query.length >= 5}
+              onSearch={() =>
                 this.props.navigation.navigate("Details", {
                   zipcode: this.state.query
                 })
