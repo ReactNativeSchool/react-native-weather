@@ -1,14 +1,16 @@
 import React from "react";
 import {
-  Image,
   View,
   ActivityIndicator,
-  Text,
   ScrollView,
   SafeAreaView
 } from "react-native";
 
-import { getWeatherIcon } from "../util/icons";
+import { format } from "date-fns";
+import { Container } from "../components/Container";
+import { H1, H2, P } from "../components/Text";
+import { WeatherIcon } from "../components/WeatherIcon";
+import { BasicRow } from "../components/List";
 
 const groupForecastByDay = list => {
   const data = {};
@@ -39,6 +41,8 @@ const groupForecastByDay = list => {
   return formattedlist;
 };
 
+const apiKey = "1648e403f1e44103b747e25c55f8c2fb";
+
 class Details extends React.Component {
   state = {
     currentWeather: {},
@@ -48,27 +52,58 @@ class Details extends React.Component {
   };
 
   componentDidMount() {
-    const zipcode = 37064;
-    const apiKey = "1648e403f1e44103b747e25c55f8c2fb";
-    // https://openweathermap.org/current
+    navigator.geolocation.getCurrentPosition(res => {
+      this.getCurrent({ coords: res.coords });
+      this.getForecast({ coords: res.coords });
+    });
+  }
+
+  componentDidUpdate(prevProps) {
+    const oldZipcode = prevProps.navigation.getParam("zipcode");
+    const zipcode = this.props.navigation.getParam("zipcode");
+    if (zipcode && oldZipcode !== zipcode) {
+      this.getCurrent({ zipcode });
+      this.getForecast({ zipcode });
+    }
+  }
+
+  getCurrent = ({ zipcode, coords }) => {
+    let suffix = "";
+    if (zipcode) {
+      suffix = `zip=${zipcode}`;
+    } else if (coords) {
+      suffix = `lat=${coords.latitude}&lon=${coords.longitude}`;
+    }
+
     fetch(
-      `https://api.openweathermap.org/data/2.5/weather?zip=${zipcode}&appid=${apiKey}&units=imperial`
+      `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=imperial&${suffix}`
     )
       .then(res => res.json())
       .then(currentWeather => {
-        // console.log("current weather res", currentWeather);
+        this.props.navigation.setParams({
+          title: currentWeather.name
+        });
+
         this.setState({ currentWeather, loadingCurrentWeather: false });
       })
       .catch(err => {
         console.log("details err", err);
       });
+  };
+
+  getForecast = ({ zipcode, coords }) => {
+    let suffix = "";
+    if (zipcode) {
+      suffix = `zip=${zipcode}`;
+    } else if (coords) {
+      suffix = `lat=${coords.latitude}&lon=${coords.longitude}`;
+    }
 
     fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?zip=${zipcode}&appid=${apiKey}&units=imperial`
+      `https://api.openweathermap.org/data/2.5/forecast?appid=${apiKey}&units=imperial&${suffix}`
     )
       .then(res => res.json())
       .then(forecast => {
-        // console.log("forecast res", forecast);
         this.setState({
           forecast: groupForecastByDay(forecast.list),
           loadingForecast: false
@@ -77,7 +112,7 @@ class Details extends React.Component {
       .catch(err => {
         console.log("forecast err", err);
       });
-  }
+  };
 
   render() {
     const {
@@ -87,53 +122,46 @@ class Details extends React.Component {
       forecast
     } = this.state;
     if (loadingCurrentWeather || loadingForecast) {
-      return <ActivityIndicator />;
+      return (
+        <Container>
+          <ActivityIndicator color="#fff" />
+        </Container>
+      );
     }
 
     const { main, weather } = currentWeather;
     return (
-      <ScrollView>
-        <SafeAreaView>
-          <Image
-            source={getWeatherIcon(weather[0].icon)}
-            style={{ width: 300, height: 300 }}
-            resizeMode="contain"
-          />
-          <Text style={{ textAlign: "center", fontSize: 40 }}>
-            {`${main.temp}°`}
-          </Text>
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-around" }}
-          >
-            <Text>
-              Low:
-              {`${main.temp_min}°`}
-            </Text>
-            <Text>{`Humidity: ${main.humidity}%`}</Text>
-            <Text>
-              High:
-              {`${main.temp_max}°`}
-            </Text>
-          </View>
-          <View style={{ marginTop: 20 }}>
-            {forecast.map(f => (
-              <View
-                key={f.day}
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between"
-                }}
-              >
-                <Text>{f.day}</Text>
-                <View style={{ flexDirection: "row" }}>
-                  <Text style={{ fontWeight: "600" }}>{f.temp_max}</Text>
-                  <Text>{f.temp_min}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </SafeAreaView>
-      </ScrollView>
+      <Container>
+        <ScrollView>
+          <SafeAreaView>
+            <WeatherIcon icon={weather[0].icon} />
+            <H1>{`${Math.round(main.temp)}°`}</H1>
+            <BasicRow>
+              <H2>{`Humidity: ${main.humidity}%`}</H2>
+            </BasicRow>
+            <BasicRow>
+              <H2>{`Low: ${Math.round(main.temp_min)}°`}</H2>
+              <H2>{`High: ${Math.round(main.temp_max)}°`}</H2>
+            </BasicRow>
+            <View style={{ marginTop: 20, paddingHorizontal: 10 }}>
+              {forecast.map(f => (
+                <BasicRow
+                  key={f.day}
+                  style={{ justifyContent: "space-between" }}
+                >
+                  <P>{format(new Date(f.day), "dddd, MMM D")}</P>
+                  <View style={{ flexDirection: "row" }}>
+                    <P style={{ fontWeight: "700", marginRight: 10 }}>
+                      {Math.round(f.temp_max)}
+                    </P>
+                    <P>{Math.round(f.temp_min)}</P>
+                  </View>
+                </BasicRow>
+              ))}
+            </View>
+          </SafeAreaView>
+        </ScrollView>
+      </Container>
     );
   }
 }
