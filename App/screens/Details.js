@@ -4,10 +4,24 @@ const apiKey = "1648e403f1e44103b747e25c55f8c2fb";
 
 export default class Details extends React.Component {
   componentDidMount() {
-    // const zipcode = 94040;
-    const zipcode = 37064;
-    fetch(
-      `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&zip=${zipcode}&units=imperial`
+    navigator.geolocation.getCurrentPosition(position => {
+      console.log("position", position);
+      this.getCurrentWeather({ coords: position.coords });
+      this.getForecast({ coords: position.coords });
+    });
+  }
+
+  getCurrentWeather = ({ zipcode, coords }) => {
+    let suffix = "";
+
+    if (zipcode) {
+      suffix = `zip=${zipcode}`;
+    } else if (coords) {
+      suffix = `lat=${coords.latitude}&lon=${coords.longitude}`;
+    }
+
+    return fetch(
+      `https://api.openweathermap.org/data/2.5/weather?appid=${apiKey}&units=imperial&${suffix}`
     )
       .then(response => response.json())
       .then(response => {
@@ -16,9 +30,19 @@ export default class Details extends React.Component {
       .catch(err => {
         console.log("current error", err);
       });
+  };
 
-    fetch(
-      `https://api.openweathermap.org/data/2.5/forecast?appid=${apiKey}&zip=${zipcode}&units=imperial`
+  getForecast = ({ zipcode, coords }) => {
+    let suffix = "";
+
+    if (zipcode) {
+      suffix = `zip=${zipcode}`;
+    } else if (coords) {
+      suffix = `lat=${coords.latitude}&lon=${coords.longitude}`;
+    }
+
+    return fetch(
+      `https://api.openweathermap.org/data/2.5/forecast?appid=${apiKey}&units=imperial&${suffix}`
     )
       .then(response => response.json())
       .then(response => {
@@ -27,7 +51,7 @@ export default class Details extends React.Component {
       .catch(err => {
         console.log("forecast error", err);
       });
-  }
+  };
 
   render() {
     return null;
