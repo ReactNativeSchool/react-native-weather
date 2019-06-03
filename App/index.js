@@ -28,7 +28,7 @@ const AppStack = createStackNavigator(
     Details: {
       screen: Details,
       navigationOptions: ({ navigation }) => ({
-        headerTitle: navigation.getParam("title", ""),
+        headerTitle: "Details",
         headerRight: (
           <React.Fragment>
             <StatusBar barStyle="light-content" />
