@@ -13,6 +13,7 @@ import { Container } from "../components/Container";
 import { WeatherIcon } from "../components/WeatherIcon";
 import { BasicRow } from "../components/List";
 import { H1, H2, P } from "../components/Text";
+import { addRecentSearch } from "../util/recentSearch";
 
 const groupForecastByDay = list => {
   const data = {};
@@ -59,9 +60,19 @@ export default class Details extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    const oldLat = prevProps.navigation.getParam("lat");
+    const lat = this.props.navigation.getParam("lat");
+
+    const oldLon = prevProps.navigation.getParam("lon");
+    const lon = this.props.navigation.getParam("lon");
+
     const oldZipcode = prevProps.navigation.getParam("zipcode");
     const zipcode = this.props.navigation.getParam("zipcode");
-    if (zipcode && oldZipcode !== zipcode) {
+
+    if (lat && oldLat !== lat && lon && oldLon !== lon) {
+      this.getCurrentWeather({ coords: { latitude: lat, longitude: lon } });
+      this.getForecast({ coords: { latitude: lat, longitude: lon } });
+    } else if (zipcode && oldZipcode !== zipcode) {
       this.getCurrentWeather({ zipcode });
       this.getForecast({ zipcode });
     }
@@ -86,6 +97,12 @@ export default class Details extends React.Component {
           this.setState({
             currentWeather: response,
             loadingCurrentWeather: false
+          });
+          addRecentSearch({
+            id: response.id,
+            name: response.name,
+            lat: response.coord.lat,
+            lon: response.coord.lon
           });
         }
       })
