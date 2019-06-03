@@ -3,7 +3,8 @@ import {
   ActivityIndicator,
   ScrollView,
   SafeAreaView,
-  View
+  View,
+  Alert
 } from "react-native";
 import { format } from "date-fns";
 
@@ -57,26 +58,51 @@ export default class Details extends React.Component {
     });
   }
 
+  componentDidUpdate(prevProps) {
+    const oldZipcode = prevProps.navigation.getParam("zipcode");
+    const zipcode = this.props.navigation.getParam("zipcode");
+    if (zipcode && oldZipcode !== zipcode) {
+      this.getCurrentWeather({ zipcode });
+      this.getForecast({ zipcode });
+    }
+  }
+
+  handleError = () => {
+    Alert.alert("No location data found!", "Please try again", [
+      {
+        text: "Okay",
+        onPress: () => this.props.navigation.navigate("Search")
+      }
+    ]);
+  };
+
   getCurrentWeather = ({ zipcode, coords }) =>
     weatherApi("/weather", { zipcode, coords })
       .then(response => {
-        this.props.navigation.setParams({ title: response.name });
-        this.setState({
-          currentWeather: response,
-          loadingCurrentWeather: false
-        });
+        if (response.cod === "404") {
+          this.handleError();
+        } else {
+          this.props.navigation.setParams({ title: response.name });
+          this.setState({
+            currentWeather: response,
+            loadingCurrentWeather: false
+          });
+        }
       })
       .catch(err => {
         console.log("current error", err);
+        this.handleError();
       });
 
   getForecast = ({ zipcode, coords }) =>
     weatherApi("/forecast", { zipcode, coords })
       .then(response => {
-        this.setState({
-          loadingForecast: false,
-          forecast: groupForecastByDay(response.list)
-        });
+        if (response.cod !== "404") {
+          this.setState({
+            loadingForecast: false,
+            forecast: groupForecastByDay(response.list)
+          });
+        }
       })
       .catch(err => {
         console.log("forecast error", err);
