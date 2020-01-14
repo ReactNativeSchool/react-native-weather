@@ -1,6 +1,7 @@
 import React from "react";
 import { TouchableOpacity, Image, StatusBar } from "react-native";
-import { createAppContainer, createStackNavigator } from "react-navigation";
+import { createAppContainer } from "react-navigation";
+import { createStackNavigator } from "react-navigation-stack";
 
 import Details from "./screens/Details";
 import Search from "./screens/Search";
@@ -29,7 +30,7 @@ const AppStack = createStackNavigator(
       screen: Details,
       navigationOptions: ({ navigation }) => ({
         headerTitle: navigation.getParam("title", ""),
-        headerRight: (
+        headerRight: () => (
           <React.Fragment>
             <StatusBar barStyle="light-content" />
             <HeaderRightButton
@@ -49,7 +50,7 @@ const AppStack = createStackNavigator(
       screen: Search,
       navigationOptions: ({ navigation }) => ({
         headerTitle: "Search",
-        headerRight: (
+        headerRight: () => (
           <React.Fragment>
             <StatusBar barStyle="dark-content" />
             <HeaderRightButton

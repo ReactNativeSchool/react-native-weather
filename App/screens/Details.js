@@ -156,7 +156,7 @@ export default class Details extends React.Component {
                   key={day.day}
                   style={{ justifyContent: "space-between" }}
                 >
-                  <P>{format(new Date(day.day), "dddd, MMM D")}</P>
+                  <P>{format(new Date(day.day), "EEEE, MMM d")}</P>
                   <View style={{ flexDirection: "row" }}>
                     <P style={{ fontWeight: "700", marginRight: 10 }}>
                       {Math.round(day.temp_max)}
