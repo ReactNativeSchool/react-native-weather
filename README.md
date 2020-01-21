@@ -5,6 +5,8 @@ A simple cross platform (iOS and Android) React Native weather app. This example
 ![Details Screen](./assets/details.png)
 ![Search Screen](./assets/search.png)
 
+The icons used are from [Open Weather Icons](https://github.com/isneezy/open-weather-icons).
+
 ### Installation
 
 - `git clone https://github.com/ReactNativeSchool/react-native-weather.git`
