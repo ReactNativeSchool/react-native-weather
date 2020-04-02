@@ -7,6 +7,8 @@ import {
   Alert
 } from "react-native";
 import { format } from "date-fns";
+import * as Location from "expo-location";
+import * as Permissions from "expo-permissions";
 
 import { weatherApi } from "../util/weatherApi";
 import { Container } from "../components/Container";
@@ -53,10 +55,17 @@ export default class Details extends React.Component {
   };
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(position => {
-      this.getCurrentWeather({ coords: position.coords });
-      this.getForecast({ coords: position.coords });
-    });
+    Permissions.askAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        if (status !== "granted") {
+          throw new Error("Permission to access location was denied");
+        }
+        return Location.getCurrentPositionAsync();
+      })
+      .then(position => {
+        this.getCurrentWeather({ coords: position.coords });
+        this.getForecast({ coords: position.coords });
+      });
   }
 
   componentDidUpdate(prevProps) {

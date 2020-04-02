@@ -56,7 +56,7 @@ const AppStack = createCompatNavigatorFactory(createStackNavigator)(
             <StatusBar barStyle="dark-content" />
             <HeaderRightButton
               icon={require("./assets/close.png")}
-              onPress={() => navigation.pop()}
+              onPress={() => navigation.popToTop()}
               style={{ tintColor: "#000" }}
             />
           </>
