@@ -2058,10 +2058,10 @@ damerau-levenshtein@^1.0.4:
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.5.tgz#780cf7144eb2e8dbd1c3bb83ae31100ccc31a414"
   integrity sha512-CBCRqFnpu715iPmw1KrdOrzRqbdFwQTwAWyyyYS42+iAgHCuXZ+/TdMgQkUENPomxEz9z1BEzuQU2Xw0kUuAgA==
 
-date-fns@^2.9.0:
-  version "2.9.0"
-  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.9.0.tgz#d0b175a5c37ed5f17b97e2272bbc1fa5aec677d2"
-  integrity sha512-khbFLu/MlzLjEzy9Gh8oY1hNt/Dvxw3J6Rbc28cVoYWQaC1S3YI4xwkF9ZWcjDLscbZlY9hISMr66RFzZagLsA==
+date-fns@^2.11.1:
+  version "2.11.1"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.11.1.tgz#197b8be1bbf5c5e6fe8bea817f0fe111820e7a12"
+  integrity sha512-3RdUoinZ43URd2MJcquzBbDQo+J87cSzB8NkXdZiN5ia1UNyep0oCyitfiL88+R7clGTeq/RniXAc16gWyAu1w==
 
 dayjs@^1.8.15:
   version "1.8.19"
@@ -2293,10 +2293,10 @@ eslint-config-airbnb@^18.0.1:
     object.assign "^4.1.0"
     object.entries "^1.1.0"
 
-eslint-config-handlebarlabs@^0.0.4:
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/eslint-config-handlebarlabs/-/eslint-config-handlebarlabs-0.0.4.tgz#07798bc104420a65898a90a12f1a80bbd3887ca7"
-  integrity sha512-sJT3H+S2aVrTj5DEH+WcsnSrOQZ1udKCO+9yHyXyhrg5/NKMrJeVuzFd26noAi9Cy+tc2VKOmUCPj9TuT6H2iA==
+eslint-config-handlebarlabs@^0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/eslint-config-handlebarlabs/-/eslint-config-handlebarlabs-0.0.5.tgz#f4ce24ba183143150ccdd67356080b958b4e1d10"
+  integrity sha512-ZzgrjGlsQ72FH+uGbWyu2ogIk24VvYTm4Ik/JfOiHa4ey9BZANKP+i/8BM8azcBBbhQIFSLkdFxvpldXNla1dw==
   dependencies:
     babel-eslint "^10.0.1"
     eslint "^6.5.1"
@@ -2305,6 +2305,7 @@ eslint-config-handlebarlabs@^0.0.4:
     eslint-plugin-import "^2.14.0"
     eslint-plugin-jsx-a11y "^6.1.2"
     eslint-plugin-react "^7.11.1"
+    eslint-plugin-react-hooks "^2.5.1"
 
 eslint-config-prettier@^6.4.0:
   version "6.9.0"
@@ -2366,6 +2367,11 @@ eslint-plugin-jsx-a11y@^6.1.2:
     emoji-regex "^7.0.2"
     has "^1.0.3"
     jsx-ast-utils "^2.2.1"
+
+eslint-plugin-react-hooks@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-2.5.1.tgz#4ef5930592588ce171abeb26f400c7fbcbc23cd0"
+  integrity sha512-Y2c4b55R+6ZzwtTppKwSmK/Kar8AdLiC2f9NADCuxbcTgPPg41Gyqa6b9GppgXSvCtkRw43ZE86CT5sejKC6/g==
 
 eslint-plugin-react@^7.11.1:
   version "7.17.0"
