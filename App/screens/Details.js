@@ -4,9 +4,11 @@ import {
   ScrollView,
   SafeAreaView,
   View,
-  Alert
+  Alert,
 } from "react-native";
 import { format } from "date-fns";
+import * as Location from "expo-location";
+import * as Permissions from "expo-permissions";
 
 import { weatherApi } from "../util/weatherApi";
 import { Container } from "../components/Container";
@@ -15,10 +17,10 @@ import { BasicRow } from "../components/List";
 import { H1, H2, P } from "../components/Text";
 import { addRecentSearch } from "../util/recentSearch";
 
-const groupForecastByDay = list => {
+const groupForecastByDay = (list) => {
   const data = {};
 
-  list.forEach(item => {
+  list.forEach((item) => {
     const [day] = item.dt_txt.split(" ");
     if (data[day]) {
       if (data[day].temp_max < item.main.temp_max) {
@@ -31,14 +33,14 @@ const groupForecastByDay = list => {
     } else {
       data[day] = {
         temp_min: item.main.temp_min,
-        temp_max: item.main.temp_max
+        temp_max: item.main.temp_max,
       };
     }
   });
 
-  const formattedList = Object.keys(data).map(key => ({
+  const formattedList = Object.keys(data).map((key) => ({
     day: key,
-    ...data[key]
+    ...data[key],
   }));
 
   return formattedList;
@@ -49,14 +51,21 @@ export default class Details extends React.Component {
     currentWeather: {},
     loadingCurrentWeather: true,
     forecast: [],
-    loadingForecast: true
+    loadingForecast: true,
   };
 
   componentDidMount() {
-    navigator.geolocation.getCurrentPosition(position => {
-      this.getCurrentWeather({ coords: position.coords });
-      this.getForecast({ coords: position.coords });
-    });
+    Permissions.askAsync(Permissions.LOCATION)
+      .then(({ status }) => {
+        if (status !== "granted") {
+          throw new Error("Permission to access location was denied");
+        }
+        return Location.getCurrentPositionAsync();
+      })
+      .then((position) => {
+        this.getCurrentWeather({ coords: position.coords });
+        this.getForecast({ coords: position.coords });
+      });
   }
 
   componentDidUpdate(prevProps) {
@@ -82,46 +91,46 @@ export default class Details extends React.Component {
     Alert.alert("No location data found!", "Please try again", [
       {
         text: "Okay",
-        onPress: () => this.props.navigation.navigate("Search")
-      }
+        onPress: () => this.props.navigation.navigate("Search"),
+      },
     ]);
   };
 
   getCurrentWeather = ({ zipcode, coords }) =>
     weatherApi("/weather", { zipcode, coords })
-      .then(response => {
-        if (response.cod === "404") {
+      .then((response) => {
+        if (response.code === "404") {
           this.handleError();
         } else {
           this.props.navigation.setParams({ title: response.name });
           this.setState({
             currentWeather: response,
-            loadingCurrentWeather: false
+            loadingCurrentWeather: false,
           });
           addRecentSearch({
             id: response.id,
             name: response.name,
             lat: response.coord.lat,
-            lon: response.coord.lon
+            lon: response.coord.lon,
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("current error", err);
         this.handleError();
       });
 
   getForecast = ({ zipcode, coords }) =>
     weatherApi("/forecast", { zipcode, coords })
-      .then(response => {
+      .then((response) => {
         if (response.cod !== "404") {
           this.setState({
             loadingForecast: false,
-            forecast: groupForecastByDay(response.list)
+            forecast: groupForecastByDay(response.list),
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.log("forecast error", err);
       });
 
@@ -151,7 +160,7 @@ export default class Details extends React.Component {
             </BasicRow>
 
             <View style={{ paddingHorizontal: 10, marginTop: 20 }}>
-              {this.state.forecast.map(day => (
+              {this.state.forecast.map((day) => (
                 <BasicRow
                   key={day.day}
                   style={{ justifyContent: "space-between" }}
